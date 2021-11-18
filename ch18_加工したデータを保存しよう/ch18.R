@@ -25,19 +25,12 @@ install.packages("openxlsx")
 library(openxlsx)
 
 newbook <- openxlsx::createWorkbook()
-openxlsx::addWorksheet(wb=newbook,sheetName = "作ったシート")
+openxlsx::addWorksheet(wb=newbook, sheetName = "作ったシート")
 openxlsx::writeData(wb=newbook, sheet="作ったシート", x = hyou2)
-openxlsx::saveWorkbook(wb=newbook,file="hyou2のエクセル.xlsx",overwrite=TRUE)
+openxlsx::saveWorkbook(wb=newbook, file="hyou2のエクセル.xlsx", overwrite=TRUE)
 
-# Excelファイルで保存する関数の例
-write_excel_file <- function(hyou,filepath){
-  wb <- openxlsx::createWorkbook()
-  openxlsx::addWorksheet(wb=wb,sheetName = "sheet")
-  openxlsx::writeData(wb=wb, sheet="sheet", x = hyou)
-  openxlsx::saveWorkbook(wb=wb,file=filepath,overwrite=TRUE)
-}
-
-write_excel_file(hyou1,"関数から保存したエクセル.xlsx")
+# Excelファイルで保存する
+write.xlsx(x=hyou1, path="関数から保存したエクセル.xlsx", overwrite=TRUE)
 
 ## 18.3 rds形式での保存-----------------------------
 
