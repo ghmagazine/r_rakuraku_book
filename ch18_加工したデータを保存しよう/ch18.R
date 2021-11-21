@@ -55,7 +55,7 @@ yonda$v2
 
 # 少し容量が大きいデータを作成して保存
 dat <- tibble(x=1:100000,
-              y=rep(c("バニラアイスクリーム","チョコレートアイスクリーム"),50000))
+              y=rep(c("バニラ","チョコ"),50000))
 write_rds(dat,"非圧縮.rds") #3.3MB
 write_rds(dat,"圧縮.rds", compress = "gz") #217kb
 

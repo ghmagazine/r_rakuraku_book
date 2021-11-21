@@ -69,7 +69,7 @@ table(try4)
 # 架空のアンケート調査の結果を作成
 set.seed(12345)
 dat <- tibble(
-  q1 = sample(c("バニラ","チョコレート","ストロベリー"), 10, TRUE),
+  q1 = sample(c("バニラ","チョコ","いちご"), 10, TRUE),
   q2 = sample(c("-19","20-39","40-59","60-"), 10, TRUE),
   q3 = sample(1:3, 10, TRUE)
 )
@@ -137,7 +137,7 @@ table(with_label)
 # 架空のアンケートデータの作成（9.2.3の再掲）
 set.seed(12345)
 dat <- tibble(
-  q1 = sample(c("バニラ","チョコレート","ストロベリー"), 10, TRUE),
+  q1 = sample(c("バニラ","チョコ","いちご"), 10, TRUE),
   q2 = sample(c("-19","20-39","40-59","60-"), 10, TRUE),
   q3 = sample(1:3, 10, TRUE)
 )
