@@ -20,7 +20,7 @@ kokyaku_master <- tibble(
 
 item_master <- tibble(
   item_id   = c("aa","ab","ac","ad"),
-  name      = c("バニラ","チョコ","イチゴ","アズキ"),
+  name      = c("バニラ","チョコ","イチゴ","あずき"),
   price     = c(600,690,650,700)
 )
 
