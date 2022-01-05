@@ -1,6 +1,6 @@
-# 15章 Rで集団集計---------------------------
+# 15章 集団の集計---------------------------
 
-## 15.1 表で集団を作ってから集計してみよう`group_by`---------------------------
+## 15.1 表を1つの変数で分割して集計しよう---------------------------
 
 #表を作成する
 dat <- tibble(
@@ -11,21 +11,21 @@ dat <- tibble(
               "男","男","男","女","女")
 )
 
-# group_byで分割してみる
+# group_by()で分割してみる
 dat %>% group_by(vanilla)
 
-# group_byなしで、summariseしてみる
+# group_by()なしで、summarise()してみる
 dat %>% summarise(age = mean(age))
 
-# group_byして、summariseしてみる
+# group_by()して、summarise()してみる
 dat %>% group_by(vanilla) %>% summarise(age = mean(age))
 
-## 15.2 集団を集計してみよう2---------------------------
+## 15.2 表を2つの変数で分割して集計しよう---------------------------
 
-#データは15.1節のものを利用
+#データは前節のものを利用
 dat %>% group_by(sex, vanilla)
 
-# group_byで2変数指定した場合のsummarise
+# group_by()で2変数指定した場合のsummarise()
 dat %>% 
   group_by(sex, vanilla) %>% 
   summarise(mean_age=mean(age))
@@ -36,13 +36,12 @@ dat %>%
   summarise(mean_age=mean(age)) %>% 
   ungroup()
 
-## 15.3 分割された表がそれぞれ何行あるか、`n()`で調べてみよう。---------------------------
+## 15.3 表が何行か調べよう---------------------------
 
-# データは引き続き15.1節の者を利用
-# 行を確認
+# データは引き続き15.1節のものを利用
 dat %>% mutate(n = n())
 
-# summariseを実行
+# summarise()を実行
 dat %>% summarise(n=n())
 
 # n()は分割された表でも動作する
@@ -50,30 +49,30 @@ dat %>%
   group_by(sex) %>% 
   mutate(n = n())
 
-#グループ分けしてsummarise
+#グループ分けしてsummarise()
 dat %>% 
   group_by(sex) %>% 
   summarise(n = n())
 
-## 15.4 前後の比較を`lag`と`lead`でやってみよう---------------------------
+## 15.4 行の前後の値で比較しよう---------------------------
 
-#ベクトル
+# ベクトル
 vec <- 1:10
 vec
 
-# lagは後ろにずらす。「遅れる」イメージ
+# lag()は後ろにずらす。「遅れる」イメージ
 lag(vec)
 
-# leadは前にずらす。「先にすすむ」イメージ
+# lead()は前にずらす。「先にすすむ」イメージ
 lead(vec)
 
 # データの作成。
 dat <- tibble(tenpo = "A", month = 1:12, 
               uriage = round(runif(12,100,2000)))
-  # uriage列は、round関数で整数に四捨五入しています
+              # uriage列は、round関数で整数に四捨五入
 dat
 
-# 先月の売上列（sengetu）と、先月の売上-今月の売上列（sa）を作成
+# 先月の売上列(sengetu)と、「先月の売上-今月の売上列（sa）」を作成
 dat %>% 
   mutate(
     sengetu = lag(uriage),
@@ -81,9 +80,10 @@ dat %>%
   )
 
 
-## 15.5 group_byとsummariseを組み合わせた処理の例---------------------------
+## 15.5 売上データの店舗別・月別変化を調べよう---------------------------
 
-#データの作成
+#データの作成(1000行4列)
+# rpois()はポワソン分布に従うランダムな数字を生成する関数（本書では解説していない）
 set.seed(12345)
 dat <- tibble(
   tenpo = sample(LETTERS[1:10], 1000, TRUE),
@@ -92,6 +92,7 @@ dat <- tibble(
   kosu  = rpois(1000,1)+1
 )
 
+# 味についてのマスタデータを作成
 aji_master <- tibble(
   aji = c("バニラ","いちご","チョコ"),
   nedan = c(600, 650, 700)
@@ -113,7 +114,7 @@ dat3
 dat3 %>% 
   summarise(uriage = sum(aji_uriage))
 
-#店舗ごとではなくて、アイスクリームの味ごとの売上を集計してみる。
+#店舗ごとではなく、アイスクリームの味ごとの売上を集計してみる
 dat %>% 
   group_by(aji) %>% 
   summarise(n_kosu = sum(kosu)) %>% 

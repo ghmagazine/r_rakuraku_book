@@ -1,6 +1,8 @@
-# 17章 tidyデータにしてみよう
+# 17章 Tidyデータの作成
 
-## 17.1 例1:出勤時刻に関するデータをTidyにしてみる
+## 17.1 例1：出勤、退勤時刻に関するデータをTidyにしよう------
+
+### 17.1.1 出勤、退勤時刻データの加工1-----------------------
 
 # kintai.xlsxのsheet1を読み込む
 library(tidyverse)
@@ -11,29 +13,31 @@ dat <- read_excel("kintai.xlsx",sheet = "sheet1")
 
 dat
 
-# fillで欠損を埋める
+# fill()で欠損を埋める
 dat2 <- dat %>% 
   fill(nen, tuki, tenpo, staff_id)
 dat2
 
-# pivot_longerで列データを列にする
+# pivot_longer()で列データを列にする
 dat3 <- dat2 %>% 
   pivot_longer(cols = matches("\\d+"), names_to = "niti", values_to="time")
 dat3
 
-# mak_dateで日付を作成してselectで必要な列に絞り込む
+# make_date()で日付を作成してselect()で必要な列に絞り込む
 dat4 <- dat3 %>% 
   mutate(hiduke = make_date(nen,tuki,niti)) %>% 
   select(hiduke, tenpo, staff_id, kintai, time)
 dat4
 
-# pivot_widerでkintai列を広げる
+# pivot_wider()でkintai列を広げる
 dat4 %>% 
   pivot_wider(id_cols=c(hiduke,tenpo,staff_id),
               names_from=kintai,
               values_from=time)
 
-# pivot_widerの警告を検証するためのデータ
+### 17.1.2 pivot_wider()とリストコラム-----------------------
+
+# pivot_wider()の警告を検証するためのデータ
 testdata <- tibble(
   id   = c(1,1,1,1,2,2,3,3),
   name = c(rep(c("s","e"),4)),
@@ -59,7 +63,9 @@ tibble(list_col = list(obj_a,obj_b,obj_c))
 testdata %>% 
   pivot_wider(id_cols=id, names_from=name,values_from=val,values_fn=length)
 
-# pivot_widerでkintai列を広げた場合の重複箇所を調べる
+### 17.1.3 出勤、退勤時刻データの加工2-----------------------
+
+# pivot_wider()でkintai列を広げた場合の重複箇所を調べる
 dat4 %>% 
   pivot_wider(id_cols=c(hiduke,tenpo,staff_id),
               names_from=kintai,
@@ -82,19 +88,19 @@ dat5 <- dat4 %>%
 
 dat5
 
-# startとend列の組み合わせを調べる
+# start列とend列の組み合わせを調べる
 dat5 %>% count(start,end) %>% filter(is.na(start) | is.na(end))
 
-# tidyにできたデータ
+# Tidyにできたデータ
 res <- dat5 %>% 
   filter(!is.na(start))
 res
 
-# kintai.xlsxをtidyデータにする
+# kintai.xlsxをTidyデータにする
 # データのインポート
 dat <- read_excel("kintai.xlsx",sheet = "sheet1")
 
-# tidyデータへの加工
+# Tidyデータへの加工
 dat %>% 
   fill(nen, tuki, tenpo, staff_id)%>% 
   pivot_longer(cols = matches("\\d+"), names_to = "niti", values_to="time") %>% 
@@ -106,7 +112,7 @@ dat %>%
               values_from=time) %>% 
   filter(!is.na(start))
 
-## 17.2 例2:人気ランキングと価格の表をtidyにしてみる
+## 17.2 例2：人気ランキングと価格の表をTidyにしよう
 
 # ranking.xlsxを読み込む
 dat <- read_excel("ranking.xlsx")
@@ -161,39 +167,39 @@ dat5 %>%
 
 # まとめ
 # 読み込み
-dat <- read_excel("ranking.xlsx")
+dat <- read_excel("ranking.xlsx")     #1
 
 # 価格データ
 kakaku_data <- dat %>% 
   select(starts_with("今月"),`価格`) %>% 
-  setNames(c("aji","kakaku"))
+  setNames(c("aji","kakaku"))         #2
 
 # ランキングデータ
 ranking_data <- dat %>% 
   select(!`価格`) %>% 
-  rename(ranking = `ランキング`) %>% 
+  rename(ranking = `ランキング`) %>%  #3
   pivot_longer(
     cols      = !ranking, 
     names_to  = "when", 
     values_to ="aji"
-  ) %>% 
+  ) %>%                               #4
   mutate(month_diff = if_else(
     str_detect(when,"今月"), 
     "0",
     str_extract(when,"\\d+(?=ヵ月)")
-  )) %>% 
+  )) %>%                              #5
   mutate(month_diff = as.numeric(month_diff)) %>% 
   mutate(hiduke = make_date(2021,12,1) %m-% months(month_diff)) %>% 
   select(hiduke, ranking, aji) %>% 
-  arrange(desc(hiduke), ranking)
+  arrange(desc(hiduke), ranking)      #6
 
 kakaku_data
 
 ranking_data
 
-## 17.3 例3:販売個数データをTidyにしてみる
+## 17.3 例3： 複数の販売個数データをTidyにしよう-------------
 
-### 17.3.1 ファイル1つ分を処理してみる
+### 17.3.1 ファイルを処理しよう------------------------------
 
 # 読み込むファイル名を指定
 file_name <- "hanbaikosu/2021年度A店舗.xlsx"
@@ -225,7 +231,7 @@ dat3 <- dat2 %>%
 
 dat3
 
-# 最後に、味列の列名を英語表記に
+# 最後に、味列の列名をローマ字表記に
 dat4 <- dat3 %>% 
   rename(aji = `味`)
 
@@ -238,7 +244,7 @@ file_name <- "hanbaikosu/2021年度A店舗.xlsx"
 nendo <- str_extract(file_name,"\\d{4}(?=年度)")
 tenpo <- str_extract(file_name,"(?<=年度).+(?=店舗)")
 
-# ファイルを読み込んでtidyにする
+# ファイルを読み込んでTidyにする
 dat <- readxl::read_excel(file_name) %>% 
   pivot_longer(cols = !`味`, 
                names_to = c("sex","age"),
@@ -246,7 +252,7 @@ dat <- readxl::read_excel(file_name) %>%
   mutate(nendo = nendo, tenpo = tenpo) %>% 
   select(nendo, tenpo, aji = `味`, everything())
 
-### 17.3.2 関数作成の基本
+### 17.3.2 関数を作ろう------------------------------------
 
 # 三角形の面積を求める関数を作成する
 menseki_sankaku <- function(teihen,takasa){
@@ -256,8 +262,7 @@ menseki_sankaku <- function(teihen,takasa){
 
 menseki_sankaku(3,4)
 
-### 17.3.3 ファイルを処理する関数を作成してみる
-
+### 17.3.3 ファイルを処理する関数を作成しよう----------------
 
 tidy_hanbaikosu <- function(file_name){
   "17.3.1 の処理"

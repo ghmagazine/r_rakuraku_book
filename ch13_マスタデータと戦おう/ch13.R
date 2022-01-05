@@ -1,8 +1,8 @@
 # 13章 マスターデータと戦おう---------------------------
 
-## 13.1 リレーシヨナルデータベース---------------------------
+## 13.1 リレーシヨナルデータベースとは---------------------------
 
-## 13.2 表のくっつけ方---------------------------
+## 13.2 複数の表を結合させよう---------------------------
 
 # データを作成する
 hanbai <- tibble(
@@ -24,16 +24,16 @@ item_master <- tibble(
   price     = c(600,690,650,700)
 )
 
-# 販売データと顧客マスターをくっつける
+# 販売データと顧客マスタを結合する
 hanbai %>% 
   left_join(kokyaku_master, by=c("kokyaku_id"))
 
-# 商品マスターもくっつける
+# 商品マスタも結合する
 hanbai %>% 
   left_join(kokyaku_master, by="kokyaku_id") %>% 
   left_join(item_master, by="item_id")
 
-## 13.3 名前が違う列同士をくっつけるには？---------------------------
+## 13.3 名前が違う列同士を結合しよう---------------------------
 
 # データを作成する
 hyou1 <- tibble(id1 = c(1,3,2,3,2),val1 = LETTERS[1:5])
@@ -62,26 +62,26 @@ hyou2
 # 複数の列名で結合する
 hyou1 %>% left_join(hyou2,by=c("id","id2"="ida"))
 
-## 13.4 いろいろな結合方法---------------------------
+## 13.4 いろいろな結合方法を知ろう---------------------------
 
 # データを作成する
 hyou1 <- tibble(id = c(1,3,2,3,2),val1 = LETTERS[1:5])
 hyou2 <- tibble(id = 1:5, val2 = c("あ","い","う","え","お"))
 
-# right_join
+# right_join()
 right_join(hyou1,hyou2,by="id")
 
 # 表をつくる
 hyou1 <- tibble(id=3:6, val1=LETTERS[1:4])
 hyou2 <- tibble(id=1:4, val2=c("あ","い","う","え"))
 
-# inner_join
+# inner_join()
 inner_join(hyou1,hyou2, by="id")
 
-# full_join
+# full_join()
 full_join(hyou1, hyou2, by="id")
 
-## 13.5 結合条件で抽出する`semi_join`と`anti_join`---------------------------
+## 13.5 表を結合してデータを抽出しよう---------------------------
 
 # 表を作成
 kokyaku <- tibble(

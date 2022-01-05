@@ -1,24 +1,23 @@
-# 9章 因子型
+# 9章 カテゴリカルデータのための因子型
 
-## 9.1 アンケート調査をした場合のデータを考えてみよう----------------------------
+## 9.1 アンケートのデータを集計しよう----------------------------
 
-## 9.2 アンケートデータを作成してみよう-------------------------------
+## 9.2 架空のアンケートデータを作成しよう-------------------------------
 
-## 9.2.1 ランダムな数字の生成-----------------------------
+## 9.2.1 ランダムな数字を生成しよう-----------------------------
 
-# runif: nでランダムに作成する数字の個数、
-# minとmaxで数字が出現する範囲を指定する。
+# nでランダムに作成する数字の個数、
+# minとmaxで数字が出現する範囲を指定する
 runif(n = 20, min = 0, max = 100)
 
-# set.seedを同時に実行することで、ランダムな結果を固定できる。
+# set.seed()を同時に実行することで、ランダムな結果を固定できる
 set.seed(12345)
 runif(5,0,10)
 
-#
 set.seed(12345)
 runif(5,0,10)
 
-## 9.2.2 Rの中でくじ引きをやってみる-----------------------------
+## 9.2.2 くじ引きをやってみよう-----------------------------
 
 # tidyverseを使えるようにする。
 library(tidyverse)
@@ -26,18 +25,15 @@ library(tidyverse)
 # set.seedで「ランダムさ」を固定できる。
 set.seed(12345)
 
-# sampl()のprob引数の動作を確認してみる。
-# probを設定しないで、ジャンケンを300回やった場合
+# sample()のprob引数の動作を確認してみる。
+# prob引数を設定しないで、ジャンケンを300回やった場合
 no_prob <- sample(
-  x=c("グー","チョキ","パー"),
-  size=300,
-  replace=TRUE
+  x = c("グー","チョキ","パー"),
+  size = 300,
+  replace = TRUE
 )
 
-# 再度、「ランダムさ」の固定
-set.seed(12345)
-
-# グーが40%、チョキが30%、パーが20%の場合
+# グーが50%、チョキが30%、パーが20%の場合
 with_prob <- sample(
   x=c("グー","チョキ","パー"),
   size=300,
@@ -49,22 +45,20 @@ with_prob <- sample(
 no_prob[1:10]
 with_prob[1:10]
 
-# tableで文字ベクトルのそれぞれの要素の出現回数を調べる。
+# table()で文字ベクトルのそれぞれの要素の出現回数を調べる。
 table(no_prob)
 table(with_prob)
 
-# replace=FALSEとした場合のsample関数の動作
+# replace = FALSEとした場合のsample()の動作
 try1 <- sample(x=c(1:10),size=10,replace=FALSE)
 try2 <- sample(x=c(1:10),size=10,replace=FALSE)
 try3 <- sample(x=c(1:10),size=10,replace=FALSE)
-try4 <- sample(x=c(1:10),size=10,replace=FALSE)
 
 table(try1)
 table(try2)
 table(try3)
-table(try4)
 
-## 9.2.3 データを作成してみよう----------------------------------
+## 9.2.3 ランダムな表データを作成しよう----------------------------------
 
 # 架空のアンケート調査の結果を作成
 set.seed(12345)
@@ -76,7 +70,7 @@ dat <- tibble(
 
 dat
 
-## 9.3 因子型をイメージで理解しよう---------------------------------
+## 9.3 因子型とは---------------------------------
 
 # q1でバニラと答えた人がいない場合のデータ
 no_van <- dat %>% filter(q1 != "バニラ")
@@ -88,7 +82,7 @@ no_van$q1 %>% table()
 # ベクトルを作る
 vec <- c("バニラ","チョコ","いちご","バニラ","チョコ")
 
-# as.factorで因子型を作成
+# as.factor()で因子型を作成
 fvec <- as.factor(vec)
 fvec
 
@@ -101,8 +95,8 @@ as.character(fvec)
 # 因子型を数字型に変換
 as.numeric(fvec)
 
-# ベクトルを作る（バニラ、チョコ、いちごが入るはずだが、
-# 「いちご」が含まれていないベクトル）
+# バニラ、チョコ、いちごが入るはずだが、
+# 「いちご」が含まれていないベクトル
 vec <- c("バニラ","チョコ","バニラ","チョコ","チョコ")
 
 # as.factorで因子型を作成（いちごは含まれない）
@@ -128,11 +122,11 @@ no_label
 with_label <- factor(vec,levels=c(1,2),labels=c("男","女"))
 with_label
 
-# 集計してみる。
+# labels引数を利用して集計
 table(no_label)
 table(with_label)
 
-## 9.4 因子型の列を架空のアンケートデータで作成してみよう。
+## 9.4 因子型の列を作成しよう
 
 # 架空のアンケートデータの作成（9.2.3の再掲）
 set.seed(12345)
@@ -161,7 +155,7 @@ mutate(
 # 変換した列を抜き出して確認
 dat %>% select(ends_with("f"))
 
-## 9.5 因子型のレベルとラベルを変数で設定してみよう（発展的な内容）
+## 9.5 変数を利用した因子型の設定
 
 # 変数で因子型のレベルやラベルを指定することも可能
 # データを作成
@@ -173,19 +167,20 @@ dat2 <- tibble(
     replace = TRUE
 ))
 
-# levelを作成。distinct関数で列を「重複なし」にできる
+# levels引数を作成
+# distinct()で列を「重複なし」にできる
 dat_levels <- dat2 %>% distinct(q)
 dat_levels
 
-# arrange関数で並べ替える
+# arrange()で並べ替える
 dat_levels <- dat_levels %>% 
   arrange(q)
 dat_levels
 
-# dat[c(<行番号>),]で行番号を並び替えることができる
+# dat[c(行番号),]で行番号を並び替えることができる
 dat_levels[c(1,12,2:11,13),]
 
-# str_extractで最初の数字を抜き出して数字データをarangeする作戦
+# str_extractで最初の数字を抜き出して数字データをarrange()する作戦
 dat_levels2 <- dat_levels %>% 
   mutate(init_num = str_extract(q,"\\d+(?=-)|(?<=-)5$"),
          init_num = as.numeric(init_num)) %>%
@@ -197,7 +192,7 @@ dat_levels2
 vec_level <- dat_levels2 %>% pull(q)
 vec_level
 
-# dat2からq列をもとに、順番を整えたlevelsに利用できるベクトルとして抜き出す。
+# dat2からq列をもとに、順番を整えたlevels引数に利用できるベクトルとして抜き出す
 vec_level <- dat2 %>% 
   distinct(q) %>% 
   arrange(q) %>% 
@@ -206,13 +201,13 @@ vec_level <- dat2 %>%
   pull(q)
 vec_level
 
-# tidyverseではない書き方の例
+# tidyverseではない書き方の例(書籍未収録)
 dat2$q |> 
   unique() |> 
   (\(x) x[order(x)])() |>
   (\(x) x[order(as.numeric(str_extract(x,"\\d+(?=-)|(?<=-)5$")))])()
 
-# ラベルを作成
+# ラベルを設定するための文字ベクトルをvec_levelから作成する
 vec_label <- vec_level %>% 
   str_replace("(-\\d+$)","\\1歳") %>% 
   str_replace("(-$)","歳\\1")

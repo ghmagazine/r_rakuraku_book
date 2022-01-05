@@ -1,8 +1,8 @@
-# 12章 ヨコとタテのデータへの変換--------------------------
+# 12章 煩雑なデータをTidyに～縦データと横データの変換～--------------------------
 
-## 12.1 longとwideなデータ--------------------------
+## 12.1 縦と横のデータを理解しよう--------------------------
 
-## 12.2 pivot_longerの基本的な使い方--------------------------
+## 12.2 横のデータを縦のデータに変換しよう--------------------------
 
 # データの作成
 dat <- tribble(
@@ -14,11 +14,11 @@ dat <- tribble(
 
 dat
 
-# pivot_longer関数で、item列以外の列を指定して縦持ちへ
+# pivot_longer()で、item列以外の列を指定して縦持ちデータへ
 dat %>% 
   pivot_longer(cols=!item, names_to="N",values_to="V")
 
-## 12.3 pivot_widerの基本的な使い方
+## 12.3 縦のデータを横のデータに変換しよう
 
 # データの作成
 dat <- tibble(
@@ -28,12 +28,12 @@ dat <- tibble(
 )
 dat
 
-# pivot_wider関数を利用してki列を「列データ」、uriage列をその値へ
+# pivot_wider()を利用してki列を「列データ」、uriage列をその値へ
 dat %>% 
   pivot_wider(
     id_cols = tenpo, names_from = ki, values_from = uriage)
 
-## 12.4 `pivot_longer`の応用:複数列に列データを分割してみよう--------------------------
+## 12.4 横から縦への変換の応用～列データを変換しながら複数の列に分割しよう〜--------------------------
 
 # データの作成
 dat <- tribble(
@@ -43,13 +43,13 @@ dat <- tribble(
   "チョコ", 9  , 10    , 11    , 12
 )
 
-# pivot_longer関数で縦持ちにしたあと、
-# separateで性別（sex）と年代列（age）を追加
+# pivot_longer()で縦持ちにしたあと、
+# separate()で性別列（sex）と年代列（age）を追加
 dat %>% 
   pivot_longer(cols=!item, names_to="N",values_to="V") %>% 
   separate(N,c("sex","age"),sep="_")
 
-# separateを使わずにpivot_longerだけで列データを処理する
+# separate()を使わずにpivot_longer()だけで列データを処理する
 dat %>% 
   pivot_longer(
     cols = !item,
@@ -58,7 +58,7 @@ dat %>%
     values_to = "V"
   )
 
-## 12.5 `pivot_wider`の応用:「ない値」を埋めてみよう--------------------------
+## 12.5 縦から横への変換の応用～欠損しているデータを埋めよう～--------------------------
 
 # データの作成（店舗CのQ1,Q2のデータない）
 dat <- tibble(
@@ -68,12 +68,12 @@ dat <- tibble(
 )
 dat
 
-# pivot_wider関数で横に広げると
+# pivot_wider()で横に広げると
 dat %>% 
   pivot_wider(
     id_cols = tenpo, names_from = ki, values_from = uriage)
 
-# vlues_fill=0とすると、NAでなくて0で埋めることができる
+# vlues_fill = 0とすると、NAでなくて0で埋めることができる
 dat %>% 
   pivot_wider(
     id_cols     = tenpo, 
@@ -82,7 +82,7 @@ dat %>%
     values_fill = 0
   )
 
-## 12.6 `pivot_xxx`関数を組み合わせて自由にデータを変換してみよう--------------------------
+## 12.6 自由にデータを変換しよう--------------------------
 
 # 図12-6のデータを作成
 dat <- tribble(
@@ -95,7 +95,7 @@ dat <- tribble(
 )
 dat
 
-# まず、pivot_longerで縦持ちデータに変換する
+# まず、pivot_longer()で縦持ちデータに変換する
 step1 <- dat %>% 
   pivot_longer(cols=starts_with("qx_"),
                names_to = "aji",
@@ -111,7 +111,8 @@ step2 <- step1 %>%
 
 step2
 
-# 横に広げたときに、値を1と表記するための値列を作成してからpivot_widerで横に広げる
+# 横に広げたときに、値を1と表記するための
+# 値列を作成してからpivot_wider()で横に広げる
 # またNAとなる値は0で埋めておく
 step3 <- step2 %>% 
   mutate(atai = 1) %>% 
